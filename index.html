@@ -3,38 +3,45 @@
 <head>
   <meta charset="utf-8">
   <title>WebAR 图片触发视频</title>
-  <!-- 强制移动模式 -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
   <!-- 引入 A-Frame 和 AR.js -->
   <script src="aframe.min.js"></script>
   <script src="aframe-ar.js"></script>
 </head>
 <body style="margin: 0; overflow: hidden;">
-  <!-- 浏览器检测提示 -->
-  <div id="browser-warning" style="display: none; position: fixed; top: 0; left: 0; width: 100%; background: #ffcc00; padding: 10px; text-align: center;">
-    <p>请使用 Chrome 或 Firefox 浏览器访问此页面！</p>
-  </div>
-
   <!-- AR 场景 -->
-  <a-scene arjs='sourceType: webcam;'>
-    <a-marker preset='hiro'>
-      <a-box position='0 0.5 -3' material='color: red;'></a-box>
+  <a-scene 
+    embedded 
+    arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
+    renderer="logarithmicDepthBuffer: true;"
+  >
+    <!-- 定义图像识别目标 -->
+    <a-marker 
+      type="pattern" 
+      url="target.patt"
+      emitevents="true" 
+    >
+      <!-- 叠加视频（平面） -->
+      <a-plane 
+        position="0 0 0" 
+        rotation="-90 0 0" 
+        width="1" 
+        height="0.5625"
+      >
+        <a-video 
+          src="video.mp4"
+          autoplay="true" 
+          loop="true"
+        ></a-video>
+      </a-plane>
     </a-marker>
+    
+    <!-- 摄像头视图 -->
+    <a-entity camera></a-entity>
   </a-scene>
 
   <!-- 提示文字 -->
   <div style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); color: white; text-align: center;">
     <p>请对准目标图片！</p>
   </div>
-
-  <script>
-    // 检测是否支持 WebXR
-    if (!('xr' in navigator)) {
-      document.getElementById('browser-warning').style.display = 'block';
-    }
-  </script>
 </body>
 </html>
