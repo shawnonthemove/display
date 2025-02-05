@@ -1,47 +1,57 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <title>WebAR 图片触发视频</title>
-  <!-- 引入 A-Frame 和 AR.js -->
-  <script src="aframe.min.js"></script>
-  <script src="aframe-ar.js"></script>
+    <title>Courage under the skin</title>
+    <script src="./aframe.min.js"></script>
+    <script src="./aframe-ar.js"></script>
 </head>
 <body style="margin: 0; overflow: hidden;">
-  <!-- AR 场景 -->
-  <a-scene 
-    embedded 
-    arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
-    renderer="logarithmicDepthBuffer: true;"
-  >
-    <!-- 定义图像识别目标 -->
-    <a-marker 
-      type="pattern" 
-      url="target.patt"
-      emitevents="true" 
-    >
-      <!-- 叠加视频（平面） -->
-      <a-plane 
-        position="0 0 0" 
-        rotation="-90 0 0" 
-        width="1" 
-        height="0.5625"
-      >
-        <a-video 
-          src="video.mp4"
-          autoplay="true" 
-          loop="true"
-        ></a-video>
-      </a-plane>
-    </a-marker>
-    
-    <!-- 摄像头视图 -->
-    <a-entity camera></a-entity>
-  </a-scene>
+    <a-scene embedded arjs>
+        <a-marker type="pattern" url="./pattern-target.patt" id="marker1">
+            <a-video src="#video1" width="1" height="0.75" position="0 0 0" rotation="-90 -90 0"></a-video>
+        </a-marker>
 
-  <!-- 提示文字 -->
-  <div style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); color: white; text-align: center;">
-    <p>请对准目标图片！</p>
-  </div>
+        <a-marker type="pattern" url="./pattern-target1.patt" id="marker2">
+            <a-video src="#video2" width="1" height="0.75" position="0 0 0" rotation="-90 -90 0"></a-video>
+        </a-marker>
+
+        <a-entity camera></a-entity>
+    </a-scene>
+
+    <a-assets>
+        <video id="video1" src="./video1.mp4" loop="true" style="display: none;"></video>
+        <video id="video2" src="./video2.mp4" loop="true" style="display: none;"></video>
+    </a-assets>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // 设置视频播放控制
+            setupMarkerVideoControl('marker1', 'video1');
+            setupMarkerVideoControl('marker2', 'video2');
+        });
+
+        /**
+         * 设置标记的视频播放控制
+         * @param {string} markerId - 标记的ID
+         * @param {string} videoId - 视频的ID
+         */
+        function setupMarkerVideoControl(markerId, videoId) {
+            const marker = document.getElementById(markerId);
+            const videoElement = document.getElementById(videoId);
+
+            if (marker && videoElement) {
+                marker.addEventListener('markerFound', function() {
+                    videoElement.play();
+                });
+
+                marker.addEventListener('markerLost', function() {
+                    videoElement.pause();
+                    videoElement.currentTime = 0; // 重置视频到开头
+                });
+            } else {
+                console.error(`Marker or Video element not found: Marker ID - ${markerId}, Video ID - ${videoId}`);
+            }
+        }
+    </script>
 </body>
 </html>
